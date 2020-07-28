@@ -1,23 +1,23 @@
-vifmgr show [VMID]
+vfmgr show [VMID]
 - VMID optional, filters to only that VM, otherwise shows all
 
-vifmgr add <VMID> <VLAN>
+vfmgr add <VMID> <VLAN>
 - If VM already has iface in VLAN, print error
 - Ensures iface has MAC assigned, assigns to both "ip link enp131s0 vf X" and "ip link enp131s0vX"
 - Adds iface with VLAN to VMID, prints MAC, adjusts config (LXC or QEmu)
 
-vifmgr rm <VMID> [VLAN]
+vfmgr rm <VMID> [VLAN]
 - If VLAN not given and VM has exactly one iface, delete that. Print error otherwise.
 - Deletes VLAN iface from VMID, if exists. Print error otherwise
 - Do NOT unassign MAC address
 
-vifmgr mv <VMID> [OLD-VLAN] <NEW-VLAN>
+vfmgr mv <VMID> [OLD-VLAN] <NEW-VLAN>
 - If OLD-VLAN not given and VM has exactly one iface, move that. Print error otherwise.
 - Find interface for OLD-VLAN, error if none found
 - ip link enp131s0 vf X vlan NEW-VLAN
 
-vifmgr apply ["OS"/"PVE"]
+vfmgr apply ["OS"/"PVE"]
 - Ensures config.yml is applied correctly (runs on system boot, for example)
 
-vifmgr fixmacs
+vfmgr fixmacs
 - Lowercases all MAC addresses in config.yml

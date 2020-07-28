@@ -281,7 +281,7 @@ def getMaxVFIdx(iface):
 # Once multi-iface hits: None will be "all interfaces"
 def getVFConfigs(iface):
     vfs = []
-    for vfcfg in CONFIG['vifs']:
+    for vfcfg in CONFIG['vfs']:
         vf = VF(CONFIG['interface'], vfcfg)
         vfs += [vf]
     return vfs
@@ -301,7 +301,7 @@ def findFreeVF(iface):
         else:
             cfg = {}
             cfg['idx'] = i
-            CONFIG['vifs'] += [cfg]
+            CONFIG['vfs'] += [cfg]
             return VF(iface, cfg)
 
     return None
