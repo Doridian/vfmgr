@@ -3,7 +3,8 @@ from os.path import dirname, abspath
 
 CONFIG = None
 
-CONFIG_FILE = dirname(abspath(__file__)) + '/config.yml'
+SCRIPT_DIR = dirname(abspath(__file__))
+CONFIG_FILE = f'{SCRIPT_DIR}/config.yml'
 
 LXC_DIR = '/etc/pve/lxc/'
 QEMU_DIR = '/etc/pve/qemu-server/'
