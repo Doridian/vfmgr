@@ -1,6 +1,6 @@
 from config import CONFIG, QEMU_DIR, LXC_DIR, save as config_save
 from sys import argv
-from os import scandir
+from os import scandir, chdir
 from iface import getVFConfigs, getVFStates, findFreeVF, findVFByVMIDAndVLAN, VF, DEFAULT_MAC
 from pve import saveAllPVEConfigs
 
