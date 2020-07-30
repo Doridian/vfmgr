@@ -64,6 +64,6 @@ def _procPVEDir(d):
 
 def getVMIDList():
     vmidList = []
-    vmidList += procPVEDir(LXC_DIR)
-    vmidList += procPVEDir(QEMU_DIR)
+    vmidList += _procPVEDir(LXC_DIR)
+    vmidList += _procPVEDir(QEMU_DIR)
     return vmidList
