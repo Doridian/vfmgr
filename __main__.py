@@ -119,6 +119,9 @@ elif cmd == 'fixorphans':
         if vf.vmid == None or vf.vmid in vmidList:
             continue
         print(f'Orphan found: {vf.getPHYName()} points to VM {vf.vmid}')
+        vf.vmid = None
+        vf.syncConfig()
+    config_save()
 else:
     print(f'Invalid command: {cmd}\n')
     f = open(f'{SCRIPT_DIR}/README', 'r')
