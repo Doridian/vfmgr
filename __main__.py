@@ -1,6 +1,6 @@
 from config import CONFIG, SCRIPT_DIR, save as config_save
 from sys import argv
-from iface import getVFConfigs, getVFStates, findFreeVF, findVFByVMIDAndVLAN, VF, DEFAULT_MAC
+from iface import getVFConfigs, getVFStates, findFreeVF, findVFByVMIDAndVLAN, VF, DEFAULT_MAC, DEFAULT_VLAN
 from pve import getVMIDList, saveAllPVEConfigs
 
 cmd = argv[1]
@@ -116,11 +116,11 @@ elif cmd == 'fixmacs':
 elif cmd == 'fixorphans':
     vmidList = getVMIDList()
     for vf in getVFConfigs(None):
-        if (vf.vmid == None and vf.vlan == None) or vf.vmid in vmidList:
+        if (vf.vmid == None and vf.vlan == DEFAULT_VLAN) or vf.vmid in vmidList:
             continue
         print(f'Orphan found: {vf.getPHYName()} points to VM {vf.vmid} and VLAN {vf.vlan}')
         vf.vmid = None
-        vf.vlan = None
+        vf.vlan = DEFAULT_VLAN
         vf.syncConfig()
     config_save()
 else:
