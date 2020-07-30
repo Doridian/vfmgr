@@ -122,6 +122,7 @@ elif cmd == 'fixorphans':
         vf.vmid = None
         vf.vlan = DEFAULT_VLAN
         vf.syncConfig()
+        vf.applyOS()
     config_save()
 else:
     print(f'Invalid command: {cmd}\n')
