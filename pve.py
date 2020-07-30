@@ -1,4 +1,5 @@
 from config import QEMU_DIR, LXC_DIR
+from os import scandir
 
 class PVEConfig:
     def __init__(self, file):

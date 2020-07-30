@@ -1,6 +1,5 @@
 from config import CONFIG, SCRIPT_DIR, save as config_save
 from sys import argv
-from os import scandir, chdir
 from iface import getVFConfigs, getVFStates, findFreeVF, findVFByVMIDAndVLAN, VF, DEFAULT_MAC
 from pve import getVMIDList, saveAllPVEConfigs
 
