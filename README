@@ -21,3 +21,6 @@ vfmgr apply ["OS"/"PVE"]
 
 vfmgr fixmacs
 - Lowercases all MAC addresses in config.yml
+
+vfmgr fixorphans
+- Removes vmid and vlan from interfaces not bound to an existing VM
