@@ -1,3 +1,5 @@
+from config import QEMU_DIR, LXC_DIR
+
 class PVEConfig:
     def __init__(self, file):
         self.file = file
@@ -48,3 +50,20 @@ def saveAllPVEConfigs():
     for key in PVEConfigCache:
         val = PVEConfigCache[key]
         val.saveIfDirty()
+
+def _procPVEDir(d):
+    vmidList = []
+    for f in scandir(d):
+        if not f.is_file(follow_symlinks=False):
+            continue
+        name = f.name
+        if not name.endswith('.conf'):
+            continue
+        vmidList += [int(name[:-5], 10)]
+    return vmidList
+
+def getVMIDList():
+    vmidList = []
+    vmidList += procPVEDir(LXC_DIR)
+    vmidList += procPVEDir(QEMU_DIR)
+    return vmidList

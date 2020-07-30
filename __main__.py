@@ -1,8 +1,8 @@
-from config import CONFIG, SCRIPT_DIR, QEMU_DIR, LXC_DIR, save as config_save
+from config import CONFIG, SCRIPT_DIR, save as config_save
 from sys import argv
 from os import scandir, chdir
 from iface import getVFConfigs, getVFStates, findFreeVF, findVFByVMIDAndVLAN, VF, DEFAULT_MAC
-from pve import saveAllPVEConfigs
+from pve import getVMIDList, saveAllPVEConfigs
 
 cmd = argv[1]
 iface = CONFIG['interface']
@@ -89,24 +89,13 @@ elif cmd == 'apply':
     if len(argv) > 2:
         applyType = argv[2].upper()
 
-    vmidList = []
-
     doPVE = applyType == 'PVE' or not applyType
     doOS = applyType == 'OS' or not applyType
 
-    def procPVEDir(d):
-        global vmidList
-        for f in scandir(d):
-            if not f.is_file(follow_symlinks=False):
-                continue
-            name = f.name
-            if not name.endswith('.conf'):
-                continue
-            vmidList += [int(name[:-5], 10)]
+    vmidList = []
 
     if doPVE:
-        procPVEDir(LXC_DIR)
-        procPVEDir(QEMU_DIR)
+        vmidList = getVMIDList()
 
     for vf in getVFConfigs(None):
         if doOS:
@@ -125,6 +114,12 @@ elif cmd == 'fixmacs':
         vf.syncConfig()
     config_save()
     print('Lowercased all MACs')
+elif cmd == 'fixorphans':
+    vmidList = getVMIDList()
+    for vf in getVFConfigs(None):
+        if vf.vmid == None or vf.vmid in vmidList:
+            continue
+        print(f'Orphan found: {vf.getPHYName()} points to VM {vf.vmid}')
 else:
     print(f'Invalid command: {cmd}\n')
     f = open(f'{SCRIPT_DIR}/README', 'r')
