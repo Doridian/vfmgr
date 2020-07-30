@@ -116,10 +116,11 @@ elif cmd == 'fixmacs':
 elif cmd == 'fixorphans':
     vmidList = getVMIDList()
     for vf in getVFConfigs(None):
-        if vf.vmid == None or vf.vmid in vmidList:
+        if (vf.vmid == None and vf.vlan == None) or vf.vmid in vmidList:
             continue
-        print(f'Orphan found: {vf.getPHYName()} points to VM {vf.vmid}')
+        print(f'Orphan found: {vf.getPHYName()} points to VM {vf.vmid} and VLAN {vf.vlan}')
         vf.vmid = None
+        vf.vlan = None
         vf.syncConfig()
     config_save()
 else:
