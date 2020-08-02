@@ -1,2 +1,4 @@
 interface: enp1s0
+drivers:
+    enp1s0: mlx4_core
 vfs: []

@@ -10,6 +10,7 @@ DEFAULT_VLAN = 4095
 class VF:
     def __init__(self, iface, cfg=None):
         self.iface = iface
+        self.driver = CONFIG['drivers'][self.iface]
 
         if cfg == None:
             self.idx = None
@@ -106,7 +107,12 @@ class VF:
             raise Exception("Invalid iface config!")
 
         phyName = self.getPHYName()
-        call(['ip', 'link', 'set', phyName, 'down'])
+
+        res = call(['ip', 'link', 'set', phyName, 'down'])
+        if res != 0 and self.vmid == None:
+            self.rebindDriver()
+            call(['ip', 'link', 'set', phyName, 'down'])
+
         res = call(['ip', 'link', 'set', self.iface, 'vf', str(self.idx), 'vlan', str(self.vlan), 'mac', self.mac, 'spoofchk', self.spoofchk])
         if res != 0:
             raise Exception("VF config failed")
@@ -236,12 +242,31 @@ class VF:
     def getLXCName(self):
         return f'eth{self.vlan}'
 
-    def getPCIeAddr(self):
-        pciDevPath = readlink(f'/sys/class/net/{self.iface}/device/virtfn{self.idx}')
+    def getDevicePath(self):
+        return f'/sys/class/net/{self.iface}/device/virtfn{self.idx}'
+
+    def getPCIeAddr(self, strip=True):
+        pciDevPath = readlink(self.getDevicePath())
         pcieAddr = pciDevPath.split('/')[1]
-        if pcieAddr.startswith('0000:'):
+        if strip and pcieAddr.startswith('0000:'):
             return pcieAddr[5:]
         return pcieAddr
+
+    def rebindDriver(self):
+        pcieAddr = self.getPCIeAddr(False)
+
+        # Unbind whatever old driver we have
+        try:
+            fh = open(f'{self.getDevicePath()}/driver/unbind', 'w')
+            fh.write(pcieAddr)
+            fh.close()
+        except FileNotFoundError:
+            pass
+
+        # Bind correct driver
+        fh = open(f'/sys/bus/pci/drivers/{self.driver}/bind', 'w')
+        fh.write(pcieAddr)
+        fh.close()
 
 def getVFStates(iface):
     res = run(['ip', 'link', 'show', 'dev', iface], stdout=PIPE)
