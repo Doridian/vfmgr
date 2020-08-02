@@ -255,6 +255,8 @@ class VF:
     def rebindDriver(self):
         pcieAddr = self.getPCIeAddr(False)
 
+        print(f'Rebinding device {pcieAddr} [{self.getPHYName()}] to {self.driver}')
+
         # Unbind whatever old driver we have
         try:
             fh = open(f'{self.getDevicePath()}/driver/unbind', 'w')
