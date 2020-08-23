@@ -19,6 +19,7 @@ class VF:
             self.vmid = None
             self.spoofchk = None
             self.linkstate = None
+            self.macvtap = False
             return
             
         self.idx = cfg['idx']
@@ -48,6 +49,11 @@ class VF:
             self.linkstate = cfg['linkstate']
         else:
             self.linkstate = 'enable'
+
+        if 'macvtap' in cfg:
+            self.macvtap = cfg['macvtap']
+        else:
+            self.macvtap = False
 
         self.cfg = cfg
         self.syncConfig()
@@ -109,7 +115,7 @@ class VF:
         phyName = self.getPHYName()
 
         res = call(['ip', 'link', 'set', phyName, 'down'])
-        if res != 0 and self.vmid == None:
+        if res != 0 and (self.vmid == None or self.macvtap):
             self.rebindDriver()
             call(['ip', 'link', 'set', phyName, 'down'])
 
@@ -118,6 +124,11 @@ class VF:
             raise Exception("VF config failed")
         call(['ip', 'link', 'set', self.iface, 'vf', str(self.idx), 'state', self.linkstate])
         call(['ip', 'link', 'set', phyName, 'address', self.mac])
+
+        if self.macvtap and self.vmid != None:
+            call(['ip', 'link', 'add', f'vmlan{self.vmid}', 'link', phyName, 'type', 'macvtap', 'mode', 'passthru'])
+            call(['ip', 'link', 'set', 'dev', f'vmlan{self.vmid}', 'up'])
+            call(['ip', 'link', 'set', 'dev', phyName, 'up'])
 
     # Returns (True, index) OR (False, nextFreeIndex)
     def _findSelfInLXC(self, lxcData):
@@ -165,6 +176,9 @@ class VF:
                 return
 
         shouldExist = vmid == self.vmid
+
+        if self.macvtap:
+            shouldExist = False
 
         lxcConf = f'{LXC_DIR}{vmid}.conf'
         qemuConf = f'{QEMU_DIR}{vmid}.conf'
