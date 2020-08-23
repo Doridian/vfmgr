@@ -70,7 +70,7 @@ int main(int argc, char **argv)
     /* parse arguments */
     for (index = 1; index < argc; index++) {
         if (strcmp(argv[index], "--use-vnet") == 0) {
-            use_vnet = 1;
+            // ignore
         } else if (strncmp(argv[index], "--br=", 5) == 0) {
             bridge = &argv[index][5];
         } else if (strncmp(argv[index], "--fd=", 5) == 0) {
