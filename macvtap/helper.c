@@ -60,9 +60,7 @@ int main(int argc, char **argv)
 {
     char tmp[4096];
     char tmp2[128];
-    struct ifreq ifr;
     int ret = 0;
-    int use_vnet = 0;
     int unixfd = -1;
     FILE* fd = NULL;
     int tapfd = -1;
