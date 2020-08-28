@@ -1,4 +1,6 @@
 interface: enp1s0
 drivers:
     enp1s0: mlx4_core
+mtus:
+    enp1s0: 9000
 vfs: []

@@ -11,6 +11,7 @@ class VF:
     def __init__(self, iface, cfg=None):
         self.iface = iface
         self.driver = CONFIG['drivers'][self.iface]
+        self.mtu = CONFIG['mtus'][self.iface]
 
         if cfg == None:
             self.idx = None
@@ -124,6 +125,8 @@ class VF:
             raise Exception("VF config failed")
         call(['ip', 'link', 'set', self.iface, 'vf', str(self.idx), 'state', self.linkstate])
         call(['ip', 'link', 'set', phyName, 'address', self.mac])
+        if self.mtu:
+            call(['ip', 'link', 'set', phyName, 'mtu', self.mtu])
 
         if self.macvtap and self.vmid != None:
             call(['ip', 'link', 'add', f'vmlan{self.vmid}', 'link', phyName, 'type', 'macvtap', 'mode', 'passthru'])
